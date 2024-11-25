@@ -1,0 +1,197 @@
+@page "/students"
+@using PStudent.Data;
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext DbContext
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<h3>Список студентов</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<div class="mb-3">
+    <button class="btn btn-success" @onclick="GoToAddStudentPage">Добавить студента</button>
+</div>
+
+@* <button class="btn btn-primary" @onclick="GoToAddStudentPage">Добавить студента</button> *@
+
+<div class="mb-3">
+    <label for="sortBy">Сортировка по:</label>
+    <select id="sortBy" class="form-select" @bind="SortBy">
+        <option value="FirstName">Имя</option>
+        <option value="LastName">Фамилия</option>
+        <option value="DateOfBirth">Дата рождения</option>
+        <option value="EnrollmentDate">Дата поступления</option>
+        <option value="GroupName">Группа</option>
+        <option value="DirectionName">Направление</option>
+        <option value="PaymentTypeName">Тип оплаты</option>
+        <option value="EducationTypeName">Тип обучения</option>
+    </select>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Дата рождения</th>
+            <th>Пол</th>
+            <th>Паспортные данные</th>
+            <th>Дата поступления</th>
+            <th>Дата окончания</th>
+            <th>Контактная информация</th>
+            <th>Группа</th>
+            <th>Направление</th>
+            <th>Тип оплаты</th>
+            <th>Тип обучения</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in SortedStudents)
+        {
+            <tr>
+                <td>@student.StudentId</td>
+                <td>@student.FirstName</td>
+                <td>@student.LastName</td>
+                <td>@student.DateOfBirth.ToShortDateString()</td>
+                <td>@student.Gender</td>
+                <td>@student.PassportData</td>
+                <td>@student.EnrollmentDate.ToShortDateString()</td>
+                <td>@(student.GraduationDate?.ToShortDateString() ?? "Ещё учится")</td>
+                <td>@student.ContactInfo</td>
+                <td>@student.Group?.GroupName</td>
+                <td>@student.Direction?.DirectionName</td>
+                <td>@student.PaymentType?.PaymentName</td>
+                <td>@student.EducationType?.TypeName</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => EditStudent(student.StudentId)">Изменить</button>
+                    <button class="btn btn-danger" @onclick="() => ConfirmDelete(student)">Удалить</button>
+                    <button class="btn btn-info" @onclick="() => ShowCourses(student.StudentId)">Курсы</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (ShowDeleteModal)
+{
+    <div class="modal show" tabindex="-1" style="display:block; background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтверждение удаления</h5>
+                <button type="button" class="btn-close" @onclick="CancelDelete"></button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить студента @StudentToDelete?.FirstName @StudentToDelete?.LastName?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Отмена</button>
+                <button type="button" class="btn btn-danger" @onclick="DeleteStudentConfirmed">Удалить</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+    private List<Student> StudentList = new List<Student>();
+    private List<Student> SortedStudents = new List<Student>();
+    private string _sortBy = "FirstName";
+    private string SortBy
+    {
+        get => _sortBy;
+        set
+        {
+            _sortBy = value;
+            SortStudents();
+        }
+    }
+    private string ErrorMessage = string.Empty;
+    private bool ShowDeleteModal = false;
+    private Student? StudentToDelete;
+
+    private async Task LoadData()
+    {
+        try
+        {
+            StudentList = await DbContext.Students
+            .Include(s => s.Group)
+            .Include(s => s.Direction)
+            .Include(s => s.PaymentType)
+            .Include(s => s.EducationType)
+            .ToListAsync();
+
+            SortStudents();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Ошибка при загрузке данных: {ex.Message}";
+        }
+    }
+
+    private void GoToAddStudentPage() => NavigationManager.NavigateTo("/add-student");
+
+
+    private void EditStudent(int studentId) => NavigationManager.NavigateTo($"/edit-student/{studentId}");
+
+    private async Task DeleteStudent(Student student)
+    {
+        try
+        {
+            DbContext.Students.Remove(student);
+            await DbContext.SaveChangesAsync();
+            await LoadData();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Ошибка при удалении студента: {ex.Message}";
+        }
+    }
+
+    private void ConfirmDelete(Student student)
+    {
+        StudentToDelete = student;
+        ShowDeleteModal = true;
+    }
+
+    private void CancelDelete()
+    {
+        ShowDeleteModal = false;
+        StudentToDelete = null;
+    }
+
+    private async Task DeleteStudentConfirmed()
+    {
+        if (StudentToDelete != null)
+        {
+            await DeleteStudent(StudentToDelete);
+            CancelDelete();
+        }
+    }
+
+    private void ShowCourses(int studentId) => NavigationManager.NavigateTo($"/courses/{studentId}");
+
+    private void SortStudents()
+    {
+        SortedStudents = SortBy switch
+        {
+            "FirstName" => StudentList.OrderBy(s => s.FirstName).ToList(),
+            "LastName" => StudentList.OrderBy(s => s.LastName).ToList(),
+            "DateOfBirth" => StudentList.OrderBy(s => s.DateOfBirth).ToList(),
+            "EnrollmentDate" => StudentList.OrderBy(s => s.EnrollmentDate).ToList(),
+            "GroupName" => StudentList.OrderBy(s => s.Group?.GroupName).ToList(),
+            "DirectionName" => StudentList.OrderBy(s => s.Direction?.DirectionName).ToList(),
+            "PaymentTypeName" => StudentList.OrderBy(s => s.PaymentType?.PaymentName).ToList(),
+            "EducationTypeName" => StudentList.OrderBy(s => s.EducationType?.TypeName).ToList(),
+            _ => StudentList.OrderBy(s => s.FirstName).ToList(),
+        };
+    }
+
+    protected override async Task OnInitializedAsync() => await LoadData();
+}

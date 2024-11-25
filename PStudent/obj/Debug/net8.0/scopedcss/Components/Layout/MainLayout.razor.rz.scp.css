@@ -1,0 +1,162 @@
+/* Стили для страницы */
+.page[b-rkrp9a60ib] {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main[b-rkrp9a60ib] {
+    flex: 1;
+}
+
+/* Стили для sidebar */
+.sidebar[b-rkrp9a60ib] {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+/* Стили для top-row */
+.top-row[b-rkrp9a60ib] {
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #d6d5d5;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 3.5rem;
+}
+
+.top-row[b-rkrp9a60ib]  a,
+.top-row[b-rkrp9a60ib]  .btn-link {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+    text-decoration: none;
+}
+
+.top-row[b-rkrp9a60ib]  a:hover,
+.top-row[b-rkrp9a60ib]  .btn-link:hover {
+    text-decoration: underline;
+}
+
+.top-row[b-rkrp9a60ib]  a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Стили для маленьких экранов */
+@media (max-width: 640.98px) {
+    .top-row[b-rkrp9a60ib] {
+        justify-content: space-between;
+    }
+
+    .top-row[b-rkrp9a60ib]  a,
+    .top-row[b-rkrp9a60ib]  .btn-link {
+        margin-left: 0;
+    }
+}
+
+/* Для больших экранов */
+@media (min-width: 641px) {
+    .page[b-rkrp9a60ib] {
+        flex-direction: row;
+    }
+
+    .sidebar[b-rkrp9a60ib] {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+
+    .top-row[b-rkrp9a60ib] {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .top-row.auth[b-rkrp9a60ib]  a:first-child {
+        flex: 1;
+        text-align: right;
+        width: 0;
+    }
+
+    .top-row[b-rkrp9a60ib],
+    article[b-rkrp9a60ib] {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+
+/* Стили для меню навигации */
+.nav-item[b-rkrp9a60ib] {
+    font-size: 1rem;
+    padding-bottom: 0.5rem;
+}
+
+/* Стили для линков с иконками */
+.nav-item[b-rkrp9a60ib]  .nav-link {
+    color: #d7d7d7;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    /* Выравнивание иконки и текста по вертикали */
+    justify-content: flex-start;
+    line-height: 3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Активный линк */
+.nav-item[b-rkrp9a60ib]  a.active {
+    background-color: rgba(255, 255, 255, 0.37);
+    color: white;
+}
+
+/* Ховер эффект для линков */
+.nav-item[b-rkrp9a60ib]  .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* Стили для выпадающего меню */
+.nav-scrollable[b-rkrp9a60ib] {
+    display: none;
+}
+
+.navbar-toggler:checked~.nav-scrollable[b-rkrp9a60ib] {
+    display: block;
+}
+
+@media (min-width: 641px) {
+    .navbar-toggler[b-rkrp9a60ib] {
+        display: none;
+    }
+
+    .nav-scrollable[b-rkrp9a60ib] {
+        display: block;
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+}
+
+/* Стили для иконок */
+.bi[b-rkrp9a60ib] {
+    display: inline-block;
+    width: 1.25rem;
+    /* Размер иконки */
+    height: 1.25rem;
+    margin-right: 1rem;
+    /* Отступ между иконкой и текстом */
+    background-size: contain;
+    vertical-align: middle;
+    line-height: 0;
+    /* Убираем лишнее вертикальное пространство */
+}
+
+/* Стили для конкретных иконок */
+.bi-house-door-fill[b-rkrp9a60ib],
+.bi-compass-fill[b-rkrp9a60ib],
+.bi-person-circle[b-rkrp9a60ib] {
+    background-size: contain !important;
+}

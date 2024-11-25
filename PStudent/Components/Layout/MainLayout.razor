@@ -1,0 +1,24 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page d-flex flex-column min-vh-100">
+    <div class="d-flex flex-grow-1">
+        <!-- Боковая панель -->
+        <div class="sidebar bg-light p-3" style="width: 250px; flex-shrink: 0;">
+            <NavMenu />
+        </div>
+
+        <!-- Основной контент -->
+        <main class="flex-grow-1 p-4">
+            @Body
+        </main>
+    </div>
+
+    <!-- Подвал -->
+    <footer class="footer text-center py-3 bg-dark text-light">
+        <p>Учебный проект | Университет: <strong>Санкт-Петербургский государственный университет телекоммуникаций им.
+                проф. М. А. Бонч-Бруевича</strong></p>
+        <p>Группа: <strong>ИБ-22ВП</strong></p>
+        <p>Предмет: <strong>Предметно-ориентированное проектирование автоматизированных систем управления</strong></p>
+        <p>Задание: <strong>Разработка модуля управления контингентом студентов</strong></p>
+    </footer>
+</div>

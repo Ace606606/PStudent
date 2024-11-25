@@ -1,0 +1,126 @@
+/* Основные стили для навигационного меню */
+.navbar-toggler {
+    appearance: none;
+    cursor: pointer;
+    width: 3.5rem;
+    height: 2.5rem;
+    color: white;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(255, 255, 255, 0.1);
+}
+
+.navbar-toggler:checked {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.top-row {
+    height: 3.5rem;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+}
+
+.bi {
+    display: inline-block;
+    position: relative;
+    width: 1.25rem;
+    /* Размер иконки */
+    height: 1.25rem;
+    margin-right: 1rem;
+    /* Отступ между иконкой и текстом */
+    background-size: contain;
+    vertical-align: middle;
+    line-height: 0;
+    /* Убираем лишнее вертикальное пространство */
+    top: -1px;
+    /* Подстраиваем положение иконки */
+}
+
+/* Стили для каждой ссылки в навигации */
+.nav-item {
+    font-size: 1rem;
+    padding-bottom: 0.5rem;
+}
+
+.nav-item:first-of-type {
+    padding-top: 1rem;
+}
+
+.nav-item:last-of-type {
+    padding-bottom: 1rem;
+}
+
+/* Стили для линков с иконками */
+.nav-item ::deep .nav-link {
+    color: white;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    /* Выравнивание иконки и текста по вертикали */
+    justify-content: flex-start;
+    line-height: 3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Активный линк */
+.nav-item ::deep a.active {
+    background-color: rgba(255, 255, 255, 0.37);
+    color: white;
+}
+
+/* Ховер эффект для линков */
+.nav-item ::deep .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* Стили для выпадающего меню */
+.nav-scrollable {
+    display: none;
+}
+
+.navbar-toggler:checked~.nav-scrollable {
+    display: block;
+}
+
+@media (min-width: 641px) {
+    .navbar-toggler {
+        display: none;
+    }
+
+    .nav-scrollable {
+        display: block;
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+}
+
+/* Стили для мобильного меню */
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    /* Выравнивание иконок и текста по левому краю */
+}
+
+/* Дополнительные стили для иконок */
+.bi-house-door-fill {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-house-door-fill' viewBox='0 0 16 16'%3E%3Cpath d='M6.5 14.5v-3.505c0-.245.25-.495.5-.495h2c.25 0 .5.25.5.5v3.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5v-7a.5.5 0 0 0-.146-.354L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.354 1.146a.5.5 0 0 0-.708 0l-6 6A.5.5 0 0 0 1.5 7.5v7a.5.5 0 0 0 .5.5h4a.5.5 0 0 0 .5-.5Z'/%3E%3C/svg%3E");
+}
+
+.bi-compass-fill {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-compass-fill' viewBox='0 0 16 16'%3E%3Cpath d='M7.077 0h1.868c1.35 0 2.616.88 2.94 2.209l3.56 11.252c.15.456-.145.956-.63.956h-2.894c-.478 0-.799-.512-.63-.957l1.426-4.435c.09-.285-.077-.593-.363-.593h-4.716c-.287 0-.452.297-.363.593l1.427 4.435c.168.445-.151.957-.63.957H4.63c-.486 0-.78-.5-.63-.957l3.56-11.252C4.603.88 5.868 0 7.078 0Zm.823 5.223h4.422l-.94 2.946H7.663L8.9 5.222Z'/%3E%3C/svg%3E");
+}
+
+.bi-person-circle {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' class='bi bi-person-circle' viewBox='0 0 16 16'%3E%3Cpath d='M13 8a5 5 0 1 1-10 0 5 5 0 0 1 10 0ZM8 7a1 1 0 1 0-2 0 1 1 0 0 0 2 0Zm0 4a3 3 0 0 0-2.832 2H10.832A3 3 0 0 0 8 11Z'/%3E%3C/svg%3E");
+}

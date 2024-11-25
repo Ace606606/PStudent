@@ -1,0 +1,38 @@
+@page "/add-course/{directionId:int}"
+@using PStudent.Data;
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Добавить курс</h3>
+
+<EditForm Model="@NewCourse" OnValidSubmit="SaveCourse">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Название курса:</label>
+        <InputText @bind-Value="NewCourse.CourseName" class="form-control" />
+    </div>
+
+    <button class="btn btn-success" type="submit">Сохранить</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Отмена</button>
+</EditForm>
+
+@code {
+    [Parameter] public int directionId { get; set; }
+    private Course NewCourse = new();
+
+    private async Task SaveCourse()
+    {
+        NewCourse.DirectionId = directionId;
+
+        DbContext.Courses.Add(NewCourse);
+        await DbContext.SaveChangesAsync();
+
+        Navigation.NavigateTo($"/direction-courses/{directionId}");
+    }
+
+    private void Cancel() => Navigation.NavigateTo($"/direction-courses/{directionId}");
+}

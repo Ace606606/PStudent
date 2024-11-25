@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "/home/ace/workdir/bonch/c#/realase/PStudent/obj/Debug/net8.0/scopedcss/projectbundle/PStudent.bundle.scp.css",
+      "PackagePath": "staticwebassets/PStudent.bundle.scp.css"
+    },
+    {
+      "Id": "/home/ace/workdir/bonch/c#/realase/PStudent/wwwroot/app.css",
+      "PackagePath": "staticwebassets/app.css"
+    },
+    {
+      "Id": "/home/ace/workdir/bonch/c#/realase/PStudent/wwwroot/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/home/ace/workdir/bonch/c#/realase/PStudent/wwwroot/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/home/ace/workdir/bonch/c#/realase/PStudent/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.PStudent.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.PStudent.props",
+      "PackagePath": "build\\PStudent.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.PStudent.props",
+      "PackagePath": "buildMultiTargeting\\PStudent.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.PStudent.props",
+      "PackagePath": "buildTransitive\\PStudent.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
