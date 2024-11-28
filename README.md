@@ -1,6 +1,7 @@
 PStudent
 PStudent Application
 
+
 Приложение PStudent — это проект на ASP.NET Core для управления студентами с использованием Razor Components и PostgreSQL в качестве базы данных. Приложение поддерживает запуск как в контейнерах Docker, так и локально без Docker.
 
 Используемые технологии и версии
