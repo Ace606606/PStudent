@@ -1,0 +1,26 @@
+# Используем SDK для выполнения миграций
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS migrator
+WORKDIR /src
+
+# Копируем файлы проекта и восстанавливаем зависимости
+COPY PStudent.csproj .
+RUN dotnet restore
+
+# Копируем исходный код
+COPY . .
+
+# Устанавливаем клиент PostgreSQL для проверки базы
+RUN apt-get update && apt-get install -y postgresql-client
+
+# Устанавливаем инструмент dotnet-ef
+RUN dotnet tool install --global dotnet-ef 
+
+# Добавляем путь к инструментам .NET в PATH
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+# Скрипт для миграций
+COPY migrate.sh /src/migrate.sh
+RUN chmod +x /src/migrate.sh
+
+# Указываем точку входа
+ENTRYPOINT ["/src/migrate.sh"]

@@ -1,0 +1,69 @@
+@page "/courses/{studentId:int}"
+@using PStudent.Data;
+@using Microsoft.EntityFrameworkCore;
+@using System.Linq;
+@using System.Threading.Tasks;
+@inject AppDbContext DbContext
+@inject NavigationManager NavigationManager
+
+<h3>Курсы студента</h3>
+
+@if (Student != null)
+{
+    <h4>Студент: @Student.FirstName @Student.LastName</h4>
+    <h5>Курсы на направлении: @Student.Direction?.DirectionName</h5>
+
+    @if (CoursesList.Any())
+    {
+        <table class="table">
+    <thead>
+        <tr>
+            <th>Курс</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in CoursesList)
+                {
+                    <tr>
+                        <td>@course.CourseName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Нет курсов для данного студента.</p>
+    }
+}
+else
+{
+    <p>Информация о студенте не найдена.</p>
+}
+
+@code {
+    [Parameter] public int studentId { get; set; }
+    private Student? Student { get; set; }
+    private List<Course> CoursesList { get; set; } = new List<Course>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStudentData();
+    }
+
+    private async Task LoadStudentData()
+    {
+        // Загружаем данные студента и включаем его направление
+        Student = await DbContext.Students
+        .Include(s => s.Direction) // Включаем направление студента
+        .FirstOrDefaultAsync(s => s.StudentId == studentId);
+
+        // Загружаем курсы, связанные с направлением студента
+        if (Student?.Direction != null)
+        {
+            CoursesList = await DbContext.Courses
+            .Where(c => c.DirectionId == Student.DirectionId) // Получаем курсы для направления
+            .ToListAsync();
+        }
+    }
+}

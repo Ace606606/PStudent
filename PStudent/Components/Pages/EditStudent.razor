@@ -1,0 +1,192 @@
+@page "/edit-student/{StudentId:int}"
+@using Microsoft.EntityFrameworkCore
+@using PStudent.Data;
+@inject AppDbContext DbContext
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@using Microsoft.AspNetCore.Components.Forms
+
+
+<h3>Редактировать студента</h3>
+
+@if (ErrorMessage != null)
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+@if (StudentToEdit != null)
+{
+    <EditForm Model="@StudentToEdit" OnValidSubmit="SaveStudent">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group mb-3">
+        <label>Имя:</label>
+        <InputText @bind-Value="StudentToEdit.FirstName" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Фамилия:</label>
+        <InputText @bind-Value="StudentToEdit.LastName" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата рождения:</label>
+        <InputDate @bind-Value="StudentToEdit.DateOfBirth" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата поступления:</label>
+        <InputDate @bind-Value="StudentToEdit.EnrollmentDate" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата окончания:</label>
+        <InputDate @bind-Value="StudentToEdit.GraduationDate" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Пол:</label>
+        <InputSelect @bind-Value="StudentToEdit.Gender" class="form-control">
+            <option value="Мужской">Мужской</option>
+            <option value="Женский">Женский</option>
+        </InputSelect>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Паспортные данные:</label>
+        <InputText @bind-Value="StudentToEdit.PassportData" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Контактная информация:</label>
+        <InputText @bind-Value="StudentToEdit.ContactInfo" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Группа:</label>
+        <InputSelect @bind-Value="StudentToEdit.GroupId" class="form-control">
+            <option value="">Выберите группу</option>
+            @foreach (var group in Groups)
+                {
+                    <option value="@group.GroupId">@group.GroupName</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Направление:</label>
+            <InputSelect @bind-Value="StudentToEdit.DirectionId" class="form-control">
+                <option value="">Выберите направление</option>
+                @foreach (var direction in Directions)
+                {
+                    <option value="@direction.DirectionId">@direction.DirectionName</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Тип обучения:</label>
+            <InputSelect @bind-Value="StudentToEdit.EducationTypeId" class="form-control">
+                <option value="">Выберите тип обучения</option>
+                @foreach (var educationType in EducationTypes)
+                {
+                    <option value="@educationType.EducationTypeId">@educationType.TypeName</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="form-group mb-3">
+            <label>Тип оплаты:</label>
+            <InputSelect @bind-Value="StudentToEdit.PaymentTypeId" class="form-control">
+                <option value="">Выберите тип оплаты</option>
+                @foreach (var paymentType in PaymentTypes)
+                {
+                    <option value="@paymentType.PaymentTypeId">@paymentType.PaymentName</option>
+                }
+            </InputSelect>
+        </div>
+
+        <button class="btn btn-success me-2" type="submit">Сохранить</button>
+        <button class="btn btn-secondary" type="button" @onclick="CancelEdit">Отмена</button>
+    </EditForm>
+}
+else
+{
+    <p>Загрузка данных...</p>
+}
+
+@code {
+    [Parameter]
+    public int StudentId { get; set; }
+
+    private Student? StudentToEdit;
+    private List<Group> Groups = new();
+    private List<Direction> Directions = new();
+    private List<EducationType> EducationTypes = new();
+    private List<PaymentType> PaymentTypes = new();
+
+    private string? ErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            StudentToEdit = await DbContext.Students.FirstOrDefaultAsync(s => s.StudentId == StudentId);
+            if (StudentToEdit == null)
+            {
+                ErrorMessage = "Студент с указанным ID не найден.";
+                return;
+            }
+
+            Groups = await DbContext.Groups.ToListAsync();
+            Directions = await DbContext.Directions.ToListAsync();
+            EducationTypes = await DbContext.EducationTypes.ToListAsync();
+            PaymentTypes = await DbContext.PaymentTypes.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Ошибка при загрузке данных: {ex.Message}";
+        }
+    }
+
+    private async Task SaveStudent()
+    {
+        try
+        {
+            if (StudentToEdit == null)
+            {
+                ErrorMessage = "Данные студента отсутствуют.";
+                return;
+            }
+
+            // Преобразование дат в UTC
+            ConvertDatesToUtc(StudentToEdit);
+
+            DbContext.Update(StudentToEdit);
+            await DbContext.SaveChangesAsync();
+            NavigationManager.NavigateTo("/students");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Ошибка при сохранении данных: {ex.Message}";
+        }
+    }
+
+    private void ConvertDatesToUtc(Student student)
+    {
+        student.DateOfBirth = DateTime.SpecifyKind(student.DateOfBirth, DateTimeKind.Utc);
+        student.EnrollmentDate = DateTime.SpecifyKind(student.EnrollmentDate, DateTimeKind.Utc);
+
+        if (student.GraduationDate.HasValue)
+        {
+            student.GraduationDate = DateTime.SpecifyKind(student.GraduationDate.Value, DateTimeKind.Utc);
+        }
+    }
+
+    private void CancelEdit()
+    {
+        NavigationManager.NavigateTo("/students");
+    }
+}

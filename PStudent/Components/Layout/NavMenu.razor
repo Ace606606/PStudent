@@ -1,0 +1,40 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">PStudent</a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
+        <div class="nav-item px-3 d-flex align-items-center">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill fs-4 me-2 align-middle" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+
+        <!-- Добавленный пункт для Студентов -->
+        <div class="nav-item px-3 d-flex align-items-center">
+            <NavLink class="nav-link" href="/students">
+                <span class="bi bi-person-fill fs-4 me-2 align-middle" aria-hidden="true"></span> Студенты
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3 d-flex align-items-center">
+            <NavLink class="nav-link" href="/groups">
+                <span class="bi bi-person-circle fs-4 me-2 align-middle" aria-hidden="true"></span> Группы
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3 d-flex align-items-center">
+            <NavLink class="nav-link" href="/directions">
+                <span class="bi bi-compass-fill fs-4 me-2 align-middle" aria-hidden="true"></span> Направления
+            </NavLink>
+        </div>
+
+    </nav>
+</div>
+
+<!-- Убедитесь, что Bootstrap Icons подключены в <head> -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">

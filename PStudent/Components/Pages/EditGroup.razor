@@ -1,0 +1,95 @@
+@page "/edit-group/{groupId:int}"
+@using Microsoft.EntityFrameworkCore
+@using PStudent.Data;
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Редактировать группу</h3>
+
+@if (GroupToEdit == null)
+{
+    <p>Загрузка группы...</p>
+}
+else
+{
+    <EditForm Model="@GroupToEdit" OnValidSubmit="SaveGroup" FormName="editGroupForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Название группы:</label>
+        <InputText @bind-Value="GroupToEdit.GroupName" class="form-control" />
+    </div>
+
+    <button class="btn btn-success" type="submit">Сохранить</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Отмена</button>
+</EditForm>
+}
+
+@code {
+    [Parameter] public int groupId { get; set; }
+    private Group? GroupToEdit; // Nullable переменная
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Загружаем группу из базы данных
+            GroupToEdit = await DbContext.Groups
+            .FirstOrDefaultAsync(g => g.GroupId == groupId);
+
+            if (GroupToEdit == null)
+            {
+                // Если группа не найдена, перенаправляем на страницу списка групп
+                Console.WriteLine("Группа не найдена!");
+                Navigation.NavigateTo("/groups");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Обрабатываем ошибку загрузки
+            Console.WriteLine($"Ошибка при загрузке группы: {ex.Message}");
+            Navigation.NavigateTo("/groups");
+        }
+    }
+
+    private async Task SaveGroup()
+    {
+        if (GroupToEdit == null)
+        {
+            // Если группа не загружена, не делаем ничего
+            Console.WriteLine("Группа не найдена при сохранении.");
+            return;
+        }
+
+        try
+        {
+            // Обновляем только нужные поля
+            var groupToUpdate = await DbContext.Groups
+            .FirstOrDefaultAsync(g => g.GroupId == GroupToEdit.GroupId);
+
+            if (groupToUpdate != null)
+            {
+                groupToUpdate.GroupName = GroupToEdit.GroupName;
+
+                // Сохраняем изменения
+                await DbContext.SaveChangesAsync();
+
+                // Перенаправляем на страницу списка групп после сохранения
+                Navigation.NavigateTo("/groups");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Обрабатываем ошибку при сохранении
+            Console.WriteLine($"Ошибка при сохранении группы: {ex.Message}");
+        }
+    }
+
+    private void Cancel()
+    {
+        // Если нажата отмена, перенаправляем на страницу списка групп
+        Navigation.NavigateTo("/groups");
+    }
+}

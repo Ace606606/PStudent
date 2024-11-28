@@ -1,0 +1,184 @@
+@page "/add-student"
+@using Microsoft.EntityFrameworkCore
+@using PStudent.Data;
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Globalization;
+@inject AppDbContext DbContext
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+<h3>Добавить нового студента</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<EditForm Model="@NewStudent" OnValidSubmit="AddStudent">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group mb-3">
+        <label>Имя:</label>
+        <InputText @bind-Value="NewStudent.FirstName" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Фамилия:</label>
+        <InputText @bind-Value="NewStudent.LastName" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата рождения:</label>
+        <InputDate @bind-Value="NewStudent.DateOfBirth" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата поступления:</label>
+        <InputDate @bind-Value="NewStudent.EnrollmentDate" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Дата окончания:</label>
+        <InputDate @bind-Value="NewStudent.GraduationDate" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Пол:</label>
+        <InputSelect @bind-Value="NewStudent.Gender" class="form-control">
+            <option value="Мужской">Мужской</option>
+            <option value="Женский">Женский</option>
+        </InputSelect>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Паспортные данные:</label>
+        <InputText @bind-Value="NewStudent.PassportData" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Контактная информация:</label>
+        <InputText @bind-Value="NewStudent.ContactInfo" class="form-control" />
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Группа:</label>
+        <InputSelect @bind-Value="NewStudent.GroupId" class="form-control">
+            <option value="">Выберите группу</option>
+            @foreach (var group in Groups)
+            {
+                <option value="@group.GroupId">@group.GroupName</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Направление:</label>
+        <InputSelect @bind-Value="NewStudent.DirectionId" class="form-control">
+            <option value="">Выберите направление</option>
+            @foreach (var direction in Directions)
+            {
+                <option value="@direction.DirectionId">@direction.DirectionName</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Тип обучения:</label>
+        <InputSelect @bind-Value="NewStudent.EducationTypeId" class="form-control">
+            <option value="">Выберите тип обучения</option>
+            @foreach (var educationType in EducationTypes)
+            {
+                <option value="@educationType.EducationTypeId">@educationType.TypeName</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="form-group mb-3">
+        <label>Тип оплаты:</label>
+        <InputSelect @bind-Value="NewStudent.PaymentTypeId" class="form-control">
+            <option value="">Выберите тип оплаты</option>
+            @foreach (var paymentType in PaymentTypes)
+            {
+                <option value="@paymentType.PaymentTypeId">@paymentType.PaymentName</option>
+            }
+        </InputSelect>
+    </div>
+
+    <button class="btn btn-success me-2" type="submit">Добавить</button>
+    <button class="btn btn-secondary" type="button" @onclick="CancelAdd">Отмена</button>
+</EditForm>
+
+
+@code {
+    private Student NewStudent = new Student();
+
+    // Списки для выбора
+    private List<Group> Groups = new();
+    private List<Direction> Directions = new();
+    private List<EducationType> EducationTypes = new();
+    private List<PaymentType> PaymentTypes = new();
+
+    // Сообщение об ошибке
+    private string? ErrorMessage;
+
+    // Загружаем данные для выбора из базы
+    protected override async Task OnInitializedAsync()
+    {
+        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("ru-RU");
+        CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("ru-RU");
+
+        // Инициализация списков
+        try
+        {
+            Groups = await DbContext.Groups.ToListAsync();
+            Directions = await DbContext.Directions.ToListAsync();
+            EducationTypes = await DbContext.EducationTypes.ToListAsync();
+            PaymentTypes = await DbContext.PaymentTypes.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Ошибка при загрузке данных: {ex.Message}";
+        }
+    }
+
+
+    private void ConvertDatesToUtc()
+    {
+        // Преобразуем даты в формат UTC
+        NewStudent.DateOfBirth = DateTime.SpecifyKind(NewStudent.DateOfBirth, DateTimeKind.Utc);
+        NewStudent.EnrollmentDate = DateTime.SpecifyKind(NewStudent.EnrollmentDate, DateTimeKind.Utc);
+        if (NewStudent.GraduationDate.HasValue)
+        {
+            NewStudent.GraduationDate = DateTime.SpecifyKind(NewStudent.GraduationDate.Value, DateTimeKind.Utc);
+        }
+        else
+        {
+            // Обрабатываем случай, когда GraduationDate равен null (если необходимо)
+            NewStudent.GraduationDate = null;
+        }
+    }
+    // Логика добавления студента
+    private async Task AddStudent()
+    {
+        try
+        {
+            // Преобразуем даты в формат UTC
+            ConvertDatesToUtc();
+            DbContext.Students.Add(NewStudent);
+            await DbContext.SaveChangesAsync();
+            NavigationManager.NavigateTo("/students");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Ошибка при добавлении студента: {ex.Message}";
+            await JSRuntime.InvokeVoidAsync("console.error", ex.Message);
+        }
+    }
+
+    // Отмена добавления
+    private void CancelAdd()
+    {
+        NavigationManager.NavigateTo("/students");
+    }
+}

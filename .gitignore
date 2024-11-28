@@ -1,0 +1,81 @@
+# Общие исключения для всех операционных систем
+.DS_Store
+Thumbs.db
+
+# Исключение для IDE и редакторов
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Исключение для логов
+*.log
+
+# Исключение для временных файлов
+*.temp
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# Исключения для C#
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.ilk
+*.idb
+
+# Исключения для сборки .NET
+artifacts/
+out/
+*.vspscc
+*.vssscc
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.csproj.user
+*.fsproj.user
+
+# Исключение для пакетов
+*.nupkg
+*.snupkg
+*.nuspec
+
+# Исключение для файлов nuget
+.nuget/
+
+# Исключение для конфигурационных файлов Docker
+docker-compose.override.yml
+.env
+
+# Исключение для зависимостей
+node_modules/
+wwwroot/lib/
+wwwroot/node_modules/
+
+# Исключение для пользовательских данных
+*.sqlite
+*.db
+*.sqlite3
+*.bak
+*.mdf
+*.ldf
+
+# Исключение для временных файлов ОС
+$RECYCLE.BIN/
+*.lnk
+ehthumbs.db
+
+# Исключение для настроек Visual Studio
+.vs/
+.vscode/
+*.vspx
+*.psess
+*.pidb
+_ReSharper.Caches/
+

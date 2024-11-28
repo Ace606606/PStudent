@@ -1,0 +1,63 @@
+@page "/direction-courses/{directionId:int}"
+@using PStudent.Data;
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Управление курсами направления: @DirectionName</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название курса</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Courses)
+        {
+            <tr>
+                <td>@course.CourseName</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteCourse(course.CourseId)">Удалить</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button class="btn btn-success" @onclick="AddCourse">Добавить курс</button>
+<button class="btn btn-secondary" @onclick="BackToDirections">Назад к направлениям</button>
+
+@code {
+    [Parameter] public int directionId { get; set; }
+    private List<Course> Courses = new();
+    private string DirectionName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var direction = await DbContext.Directions.Include(d => d.Courses)
+        .FirstOrDefaultAsync(d => d.DirectionId == directionId);
+
+        if (direction != null)
+        {
+            DirectionName = direction.DirectionName;
+            Courses = direction.Courses.ToList();
+        }
+    }
+
+    private void AddCourse() => Navigation.NavigateTo($"/add-course/{directionId}");
+
+    private async Task DeleteCourse(int courseId)
+    {
+        var course = await DbContext.Courses.FirstOrDefaultAsync(c => c.CourseId == courseId);
+        if (course == null) return;
+
+        DbContext.Courses.Remove(course);
+        await DbContext.SaveChangesAsync();
+        Courses.Remove(course);
+    }
+
+    private void BackToDirections() => Navigation.NavigateTo("/directions");
+}

@@ -1,0 +1,80 @@
+@page "/directions"
+@using PStudent.Data;
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Управление направлениями</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название направления</th>
+            <th>Количество курсов</th>
+            <th>Количество студентов</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var direction in DirectionsList)
+        {
+            <tr>
+                <td>@direction.DirectionName</td>
+                <td>@direction.Courses.Count</td>
+                <td>@direction.Students.Count</td>
+                <td>
+                    <button class="btn btn-primary btn-sm"
+                        @onclick="() => EditDirection(direction.DirectionId)">Редактировать</button>
+                    <button class="btn btn-info btn-sm" @onclick="() => ManageCourses(direction.DirectionId)">Курсы</button>
+                    <button class="btn btn-danger btn-sm"
+                        @onclick="() => DeleteDirection(direction.DirectionId)">Удалить</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<button class="btn btn-success" @onclick="AddDirection">Добавить направление</button>
+
+@code {
+    private List<Direction> DirectionsList = new();
+    private string ErrorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DirectionsList = await DbContext.Directions
+        .Include(d => d.Courses)
+        .Include(d => d.Students) // Включаем студентов, чтобы получить их количество
+        .ToListAsync();
+    }
+
+    private void AddDirection() => Navigation.NavigateTo("/add-direction");
+    private void EditDirection(int directionId) => Navigation.NavigateTo($"/edit-direction/{directionId}");
+    private void ManageCourses(int directionId) => Navigation.NavigateTo($"/direction-courses/{directionId}");
+
+    private async Task DeleteDirection(int directionId)
+    {
+        var direction = await DbContext.Directions
+        .Include(d => d.Students) // Включаем студентов, чтобы проверить их наличие
+        .FirstOrDefaultAsync(d => d.DirectionId == directionId);
+
+        if (direction == null) return;
+
+        if (direction.Students.Any()) // Если есть студенты, не разрешаем удаление
+        {
+            ErrorMessage = "Невозможно удалить направление, так как на нем есть студенты.";
+            return;
+        }
+
+        DbContext.Directions.Remove(direction);
+        await DbContext.SaveChangesAsync();
+        DirectionsList.Remove(direction); // Удаляем из списка на странице
+        ErrorMessage = string.Empty; // Очищаем сообщение об ошибке
+    }
+}

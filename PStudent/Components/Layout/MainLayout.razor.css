@@ -1,0 +1,162 @@
+/* Стили для страницы */
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Стили для sidebar */
+.sidebar {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+/* Стили для top-row */
+.top-row {
+    background-color: #f7f7f7;
+    border-bottom: 1px solid #d6d5d5;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    height: 3.5rem;
+}
+
+.top-row ::deep a,
+.top-row ::deep .btn-link {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+    text-decoration: none;
+}
+
+.top-row ::deep a:hover,
+.top-row ::deep .btn-link:hover {
+    text-decoration: underline;
+}
+
+.top-row ::deep a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Стили для маленьких экранов */
+@media (max-width: 640.98px) {
+    .top-row {
+        justify-content: space-between;
+    }
+
+    .top-row ::deep a,
+    .top-row ::deep .btn-link {
+        margin-left: 0;
+    }
+}
+
+/* Для больших экранов */
+@media (min-width: 641px) {
+    .page {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .top-row.auth ::deep a:first-child {
+        flex: 1;
+        text-align: right;
+        width: 0;
+    }
+
+    .top-row,
+    article {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+
+/* Стили для меню навигации */
+.nav-item {
+    font-size: 1rem;
+    padding-bottom: 0.5rem;
+}
+
+/* Стили для линков с иконками */
+.nav-item ::deep .nav-link {
+    color: #d7d7d7;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    /* Выравнивание иконки и текста по вертикали */
+    justify-content: flex-start;
+    line-height: 3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Активный линк */
+.nav-item ::deep a.active {
+    background-color: rgba(255, 255, 255, 0.37);
+    color: white;
+}
+
+/* Ховер эффект для линков */
+.nav-item ::deep .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* Стили для выпадающего меню */
+.nav-scrollable {
+    display: none;
+}
+
+.navbar-toggler:checked~.nav-scrollable {
+    display: block;
+}
+
+@media (min-width: 641px) {
+    .navbar-toggler {
+        display: none;
+    }
+
+    .nav-scrollable {
+        display: block;
+        height: calc(100vh - 3.5rem);
+        overflow-y: auto;
+    }
+}
+
+/* Стили для иконок */
+.bi {
+    display: inline-block;
+    width: 1.25rem;
+    /* Размер иконки */
+    height: 1.25rem;
+    margin-right: 1rem;
+    /* Отступ между иконкой и текстом */
+    background-size: contain;
+    vertical-align: middle;
+    line-height: 0;
+    /* Убираем лишнее вертикальное пространство */
+}
+
+/* Стили для конкретных иконок */
+.bi-house-door-fill,
+.bi-compass-fill,
+.bi-person-circle {
+    background-size: contain !important;
+}

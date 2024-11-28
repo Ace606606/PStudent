@@ -1,0 +1,65 @@
+@page "/edit-direction/{DirectionId}"
+@using PStudent.Data;
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+
+<h3>Редактирование направления</h3>
+
+@if (direction != null)
+{
+    <EditForm Model="direction" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="directionName">Название направления</label>
+        <InputText id="directionName" class="form-control" @bind-Value="direction.DirectionName" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Сохранить изменения</button>
+
+    <button type="button" class="btn btn-secondary" @onclick="GoBack">Отмена</button>
+</EditForm>
+}
+else
+{
+    <p>Загрузка...</p>
+}
+
+@code {
+    [Parameter]
+    public string DirectionId { get; set; } = null!; private Direction? direction;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (int.TryParse(DirectionId, out var directionId)) // Преобразуем в int
+        {
+            direction = await DbContext.Directions
+            .FirstOrDefaultAsync(d => d.DirectionId == directionId);
+
+            if (direction == null)
+            {
+                Navigation.NavigateTo("/directions");
+            }
+        }
+        else
+        {
+            Navigation.NavigateTo("/directions");
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (direction != null)
+        {
+            DbContext.Directions.Update(direction);
+            await DbContext.SaveChangesAsync();
+            Navigation.NavigateTo("/directions");
+        }
+    }
+
+    private void GoBack() => Navigation.NavigateTo("/directions");
+}

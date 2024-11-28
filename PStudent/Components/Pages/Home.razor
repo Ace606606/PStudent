@@ -1,0 +1,31 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+<PageTitle>Home</PageTitle>
+
+<h1>Добро пожаловать в систему управления обучением!</h1>
+
+<p>Здесь вы можете управлять студентами, группами и направлениями.</p>
+
+<div class="button-container">
+    <button class="btn btn-primary" @onclick="NavigateToStudents">Студенты</button>
+    <button class="btn btn-primary" @onclick="NavigateToGroups">Группы</button>
+    <button class="btn btn-primary" @onclick="NavigateToDirections">Направления</button>
+</div>
+
+@code {
+    private void NavigateToStudents()
+    {
+        Navigation.NavigateTo("/students");
+    }
+
+    private void NavigateToGroups()
+    {
+        Navigation.NavigateTo("/groups");
+    }
+
+    private void NavigateToDirections()
+    {
+        Navigation.NavigateTo("/directions");
+    }
+}

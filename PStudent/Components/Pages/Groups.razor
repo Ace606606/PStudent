@@ -1,0 +1,78 @@
+@page "/groups"
+@using PStudent.Data;
+@using Microsoft.EntityFrameworkCore
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Управление группами</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название группы</th>
+            <th>Количество студентов</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var group in groupList)
+        {
+            <tr>
+                <td>@group.GroupName</td>
+                <td>@group.Students.Count</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" @onclick="() => EditGroup(group.GroupId)">Редактировать</button>
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteGroup(group.GroupId)">Удалить</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="mb-3">
+    <button class="btn btn-success" @onclick="AddGroup">Добавить группу</button>
+</div>
+
+@code {
+    private List<Group> groupList = new();
+    private string ErrorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGroups();
+    }
+
+    private async Task LoadGroups()
+    {
+        groupList = await DbContext.Groups.Include(g => g.Students).ToListAsync();
+        StateHasChanged(); // Обновляем компонент, чтобы он перерисовался
+    }
+
+    private void AddGroup() => Navigation.NavigateTo("/add-group");
+
+    private void EditGroup(int groupId) => Navigation.NavigateTo($"/edit-group/{groupId}");
+
+    private async Task DeleteGroup(int groupId)
+    {
+        var group = await DbContext.Groups.Include(g => g.Students).FirstOrDefaultAsync(g => g.GroupId == groupId);
+
+        if (group == null) return;
+
+        if (group.Students.Any())
+        {
+            ErrorMessage = "Нельзя удалить группу, если есть привязанные студенты!";
+            StateHasChanged(); // Перерисовываем компонент, чтобы отобразить сообщение
+            return;
+        }
+
+        DbContext.Groups.Remove(group);
+        await DbContext.SaveChangesAsync();
+        await LoadGroups(); // Обновляем список групп после удаления
+    }
+}

@@ -1,0 +1,48 @@
+@page "/add-direction"
+@using PStudent.Data;
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Добавить направление</h3>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
+<EditForm Model="@NewDirection" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="DirectionName">Название направления</label>
+        <InputText id="DirectionName" class="form-control" @bind-Value="NewDirection.DirectionName" />
+        <ValidationMessage For="@(() => NewDirection.DirectionName)" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Добавить</button>
+    <button type="button" class="btn btn-secondary" @onclick="GoBack">Отмена</button>
+</EditForm>
+
+@code {
+    private Direction NewDirection = new Direction();
+    private string ErrorMessage = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            // Добавление нового направления в базу данных
+            DbContext.Directions.Add(NewDirection);
+            await DbContext.SaveChangesAsync();
+            Navigation.NavigateTo("/directions"); // Перенаправление на страницу списка направлений
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Ошибка при добавлении направления: {ex.Message}";
+        }
+    }
+
+    private void GoBack() => Navigation.NavigateTo("/directions");
+}

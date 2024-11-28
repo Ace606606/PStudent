@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    image: app:1.0
+    ports:
+      - "5000:5000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=student_managment;Username=student_managment;Password=student_managment
+    depends_on:
+      - db
+      - migrator
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: student_managment
+      POSTGRES_PASSWORD: student_managment
+      POSTGRES_DB: student_managment
+    ports:
+      - "9898:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  migrator:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrator
+    image: migrator:1.0
+    depends_on:
+      - db
+volumes:
+  postgres_data:

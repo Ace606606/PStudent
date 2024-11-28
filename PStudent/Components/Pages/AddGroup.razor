@@ -1,0 +1,36 @@
+@page "/add-group"
+@using Microsoft.EntityFrameworkCore
+@using PStudent.Data;
+@inject AppDbContext DbContext
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<h3>Добавить группу</h3>
+
+<EditForm Model="@NewGroup" OnValidSubmit="SaveGroup">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Название группы:</label>
+        <InputText @bind-Value="NewGroup.GroupName" class="form-control" />
+    </div>
+
+    <button class="btn btn-success" type="submit">Сохранить</button>
+    <button class="btn btn-secondary" type="button" @onclick="Cancel">Отмена</button>
+    <!-- type="button" чтобы не отправляло форму -->
+</EditForm>
+
+@code {
+    private Group NewGroup = new();
+
+    private async Task SaveGroup()
+    {
+        DbContext.Groups.Add(NewGroup);
+        await DbContext.SaveChangesAsync();
+
+        Navigation.NavigateTo("/groups");
+    }
+
+    private void Cancel() => Navigation.NavigateTo("/groups");
+}
